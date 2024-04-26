@@ -1,0 +1,55 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver import Keys, ActionChains
+from time import sleep
+
+driver = webdriver.Chrome()
+driver.maximize_window()
+try:
+    driver.get("https://fix-online.sbis.ru/")
+    sleep(1)
+    user_login, user_password = 'vrinn', 'Демо123'
+    login = driver.find_element(By.CSS_SELECTOR, '[type="text"]')
+    login.send_keys(user_login, Keys.ENTER)
+    sleep(1)
+    password = driver.find_element(By.CSS_SELECTOR, '[type="Password"]')
+    password.send_keys(user_password, Keys.ENTER)
+    sleep(5)
+    btn = driver.find_element(By.CSS_SELECTOR, '[name="item-contacts"] [data-qa="NavigationPanels-Accordion__title"]')
+    btn.click()
+    sleep(1)
+    btn = driver.find_element(By.CLASS_NAME, 'NavigationPanels-SubMenu__headTitle')
+    btn.click()
+    sleep(3)
+    btn = driver.find_element(By.CSS_SELECTOR, '[data-qa="sabyPage-addButton"]')
+    btn.click()
+    sleep(3)
+    search = driver.find_element(By.CSS_SELECTOR, '[type="text"]')
+    search.send_keys('Андуин', Keys.ENTER)
+    sleep(1)
+    btn = driver.find_element(By.CLASS_NAME, 'msg-addressee-selector__addressee')
+    btn.click()
+    sleep(3)
+    text = driver.find_element(By.CSS_SELECTOR, '[data-qa="textEditor_slate_Field"]')
+    text.send_keys('Текст сообщения', Keys.ENTER)
+    sleep(1)
+    btn = driver.find_element(By.CSS_SELECTOR, '[data-qa="msg-send-editor__send-button"]')
+    btn.click()
+    sleep(2)
+    btn = driver.find_element(By.CSS_SELECTOR, '[data-qa="controls-stack-Button__close"]')
+    btn.click()
+    sleep(1)
+    message = driver.find_element(By.CSS_SELECTOR, '[data-qa="item"] .msg-entity-text')
+    assert message.text == "Текст сообщения", 'Сообщение не найдено'
+    cont = driver.find_element(By.CSS_SELECTOR, '.msg-dialogs-item')
+    action_chains = ActionChains(driver)
+    action_chains.move_to_element(cont).perform()
+    sleep(1)
+    delete = driver.find_element(By.CSS_SELECTOR, '[data-qa="controls-itemActions__action deleteToArchive"]')
+    delete.click()
+    sleep(2)
+    message = driver.find_element(By.CSS_SELECTOR, '[data-qa="item"] .msg-entity-text')
+    assert message.text != "Текст сообщения", 'Сообщение отображается'
+    print("Тест пройден успешно")
+finally:
+    driver.quit()
